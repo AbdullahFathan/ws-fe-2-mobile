@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/Anime/anime_bloc.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,7 +12,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String dropdownValue = 'Naruto';
-  String quote = '';
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,11 @@ class _HomePageState extends State<HomePage> {
               height: 25,
             ),
             ElevatedButton.icon(
-              onPressed: () => {},
+              onPressed: () => {
+                context
+                    .read<AnimeBloc>()
+                    .add(GetQuoteEvent(characterName: dropdownValue))
+              },
               icon: const Icon(Icons.send),
               label: const Text(
                 "Send Data",
@@ -53,9 +59,25 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 45, horizontal: 45),
-              child: Text(quote),
+            BlocConsumer<AnimeBloc, AnimeState>(
+              listener: (context, state) {
+                if (state is AnimeEror) {
+                  print("There is eror in: ${state.erorText}");
+                }
+              },
+              builder: (context, state) {
+                if (state is AnimeLoading) {
+                  return const CircularProgressIndicator();
+                } else if (state is AnimeSuccess) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 45, horizontal: 45),
+                    child: Text(state.animeModel!.quote),
+                  );
+                }
+
+                return Container();
+              },
             )
           ],
         ),

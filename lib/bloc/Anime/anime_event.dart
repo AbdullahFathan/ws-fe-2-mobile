@@ -1,4 +1,10 @@
 part of 'anime_bloc.dart';
 
-@immutable
 abstract class AnimeEvent {}
+
+class GetQuoteEvent extends AnimeEvent {
+  String characterName;
+  GetQuoteEvent({
+    required this.characterName,
+  });
+}
